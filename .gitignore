@@ -5,5 +5,8 @@
 !.vscode/extensions.json
 node_modules/*
 artefacts/*
+artefacts
+cache/*
+cache
 .env
 */.env
