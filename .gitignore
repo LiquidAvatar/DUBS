@@ -4,9 +4,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 node_modules/*
-artefacts/*
-artefacts
-cache/*
-cache
+artefacts/**
+cache/**
 .env
 */.env
