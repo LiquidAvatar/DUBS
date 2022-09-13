@@ -2,7 +2,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SafeWallet is Ownable {
+contract VestingWallet is Ownable {
     uint256 public startTime;
     bool public isLocked = false;
     ERC20 public token;
@@ -23,15 +23,10 @@ contract SafeWallet is Ownable {
             isVestingScheduleLocked() == false,
             "Schedule is already locked!"
         );
-        // Require the destinationAddress to be in the hard-coded array of wallets
-        for(uint i = 0; i < vestingScheduleEvents.length; i++) {
-            require(
-                isAddressInWithdrawalWhitelist(_destinationAddress),
-                "Destination is not in whitelist!"
-            );
-        }
 
-        vestingScheduleEvents.push(VestingScheduleEvent(_month, _destinationAddress, _amount, false));
+        if(isAddressInWithdrawalWhitelist(_destinationAddress)) {
+            vestingScheduleEvents.push(VestingScheduleEvent(_month, _destinationAddress, _amount, false));
+        }
     }
 
     function isAddressInWithdrawalWhitelist(address _address) public view returns (bool) {
@@ -93,6 +88,10 @@ contract SafeWallet is Ownable {
         }
     }
 
+    function getCurrentMonth() public view returns (uint) {
+        return (block.timestamp - startTime) / monthLengthDays;
+    }
+
     // In the final version this can be hardcoded into the contract
     address[] public allowedWallets;
 
@@ -109,7 +108,5 @@ contract SafeWallet is Ownable {
         startTime = block.timestamp;
         isLocked = false;
     }
-
-    bool[] public hasWithdrawalBeenExecutedForMonth;
 
 }

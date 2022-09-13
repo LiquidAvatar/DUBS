@@ -12,8 +12,8 @@ async function main() {
 	console.log("Account balance:", (await deployer.getBalance()).toString());
     
     try {
-        const SafeWallet = await ethers.getContractFactory("SafeWallet");
-        const contract = await SafeWallet.deploy("0x34beb4a3fdaef51def94e8b3dd07da11ed69423e");
+        const VestingWallet = await ethers.getContractFactory("VestingWallet");
+        const contract = await VestingWallet.deploy("0x34beb4a3fdaef51def94e8b3dd07da11ed69423e");
         console.log("Contract deployed at:", contract.address);
 
         // Set up the vesting periods
