@@ -12,7 +12,7 @@ import "hardhat-contract-sizer";
  * @type import('hardhat/config').HardhatUserConfig
  */
  const config: HardhatUserConfig = {
-  defaultNetwork: "mumbai",
+  defaultNetwork: "hardhat",
   contractSizer: {
     alphaSort: true,
     disambiguatePaths: false,
@@ -20,8 +20,19 @@ import "hardhat-contract-sizer";
     strict: true,
   },
   networks: {
+
+    hardhat: {
+      accounts: [
+        {
+          privateKey: process.env.LOCAL_PERSISTENT_PK || "",
+          balance: '10000000000000000000000',
+        },
+      ],
+    },
+    
+
     mumbai: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/YaOSOZ7aeXGo__XNGzL-3NeiKGps05xm",
+      url: process.env.MUMBAI_RPC_URL || "",
       accounts: {
         mnemonic: process.env.TESTNET_MNENONIC,
         path: "m/44'/60'/0'/0",

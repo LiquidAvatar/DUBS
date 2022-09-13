@@ -11,7 +11,7 @@ async function main() {
 
 	console.log("Account balance:", (await deployer.getBalance()).toString());
 
-	const DubsContract = await ethers.getContractFactory("DUBS");
+	const DubsContract = await ethers.getContractFactory("Dubs");
 	const contract = await DubsContract.deploy();
 
 	console.log("Contract deployed at:", contract.address);
