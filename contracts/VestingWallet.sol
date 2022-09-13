@@ -6,7 +6,7 @@ contract VestingWallet is Ownable {
     uint256 public startTime;
     bool public isLocked = false;
     ERC20 public token;
-    uint256 public monthLengthDays = 30 days;
+    uint256 public monthLengthDays = 28 days;
 
     struct VestingScheduleEvent {
         uint month;
