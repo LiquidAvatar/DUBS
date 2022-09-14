@@ -70,17 +70,18 @@ contract VestingWallet is Ownable {
         allowedWallets.push(_address);
     }
 
-    function runMonthlyWithdrawal(uint month) onlyOwner public {
+    function withdraw(uint month) onlyOwner public {
         require(
             isVestingScheduleLocked() == true,
             "Schedule is not locked yet!"
         );
-        for (uint i = 0; i < vestingScheduleEvents.length; i++) {
-            // Make sure the current time is after the vesting vesting period.
-            require(block.timestamp >= startTime + vestingScheduleEvents[i].month * monthLengthDays,
-                    "Vesting period has not passed yet"
-            );
 
+        require(
+            block.timestamp >= startTime + (month * monthLengthDays),
+            "The specified months vesting schedule is not runnable yet"
+        );
+
+        for (uint i = 0; i < vestingScheduleEvents.length; i++) {
             if (vestingScheduleEvents[i].month == month && vestingScheduleEvents[i].hasRun == false) {
                 vestingScheduleEvents[i].hasRun = true;
                 token.transfer(vestingScheduleEvents[i].destinationAddress, vestingScheduleEvents[i].amount);
