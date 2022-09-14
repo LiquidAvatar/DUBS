@@ -7,6 +7,7 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-deploy-ethers";
 import "hardhat-deploy";
 import "hardhat-contract-sizer";
+import "@nomiclabs/hardhat-etherscan";
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -18,6 +19,11 @@ import "hardhat-contract-sizer";
     disambiguatePaths: false,
     runOnCompile: true,
     strict: true,
+  },
+  etherscan: {
+    apiKey: {
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY
+    },
   },
   networks: {
 

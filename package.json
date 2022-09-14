@@ -24,6 +24,7 @@
     "hardhat-network": "npx hardhat node"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
     "hardhat-contract-sizer": "^2.6.1"
   }
 }

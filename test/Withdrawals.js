@@ -330,6 +330,7 @@ describe("VestingWallet Withdrawals", function () {
         // Now increment the time by 28 days. It should be runnable now.
 
         try {
+            const monthLength = 28 * 24 * 60 * 60;
             await ethers.provider.send('evm_increaseTime', [monthLength]);
             await vestingWallet.withdraw(1);
             
