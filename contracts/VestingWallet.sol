@@ -29,6 +29,17 @@ contract VestingWallet is Ownable {
         }
     }
 
+    function resetVestingSchedule() public onlyOwner {
+        // Do not allow modification of the vesting schedule once it has been locked
+        require(
+            isVestingScheduleLocked() == false,
+            "Schedule is already locked!"
+        );
+
+        delete vestingScheduleEvents;
+
+    }
+
     function isAddressInWithdrawalWhitelist(address _address) public view returns (bool) {
         for(uint i = 0; i < allowedWallets.length; i++) {
             if(allowedWallets[i] == _address) {
