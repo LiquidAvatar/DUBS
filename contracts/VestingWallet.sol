@@ -1,4 +1,5 @@
 pragma solidity ^0.8.0;
+pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -17,6 +18,23 @@ contract VestingWallet is Ownable {
 
     VestingScheduleEvent[] vestingScheduleEvents;
 
+    function setVestingSchedule(VestingScheduleEvent[] memory _vestingScheduleEvents) public onlyOwner {
+        require(isLocked == false, "Vesting schedule is locked");
+
+        // Clear the vesting schedule before we begin
+        delete vestingScheduleEvents;
+
+        for(uint i = 0; i < _vestingScheduleEvents.length; i++) {
+            // Check that the destinaton address is in the whitelist
+            if(isAddressInWithdrawalWhitelist(_vestingScheduleEvents[i].destinationAddress)) {
+                vestingScheduleEvents.push(_vestingScheduleEvents[i]);
+            } else {
+                // Reset the vesting schedule memory. This is a security precaution. Do not remove.
+                delete vestingScheduleEvents;
+            }
+        }
+    }
+
     function addVestingScheduleEvent(uint _month, address _destinationAddress, uint _amount) public onlyOwner {
         // Do not allow modification of the vesting schedule once it has been locked
         require(
@@ -24,9 +42,13 @@ contract VestingWallet is Ownable {
             "Schedule is already locked!"
         );
 
-        if(isAddressInWithdrawalWhitelist(_destinationAddress)) {
-            vestingScheduleEvents.push(VestingScheduleEvent(_month, _destinationAddress, _amount, false));
-        }
+        require(
+            isAddressInWithdrawalWhitelist(_destinationAddress) == true,
+            "Address is not allowed!"
+        );
+
+        vestingScheduleEvents.push(VestingScheduleEvent(_month, _destinationAddress, _amount, false));
+        
     }
 
     function resetVestingSchedule() public onlyOwner {

@@ -2,6 +2,50 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { BigNumber } = require("ethers");
 
+const fs = require('fs');
+
+async function loadVestingScheduleFromFile() {
+    // Load the CSV 
+    const csv = fs.readFileSync('./csv/vesting.csv', 'utf8');
+
+    // Split the CSV into lines
+    const lines = csv.split('\n');
+
+    // Split the lines into arrays
+    const events = lines.map(line => line.split(','));
+
+    // Convert the arrays into objects
+    const vestingEvents = events.map(event => {
+        return {
+            month: event[0],
+            destinationAddress: event[1],
+            amount: event[2],
+        }
+    });
+
+    // Remove the header row
+    vestingEvents.shift();
+
+    return vestingEvents;
+
+}
+
+async function loadAllowedAddressesFromFile() {
+    // Load the CSV
+    try {
+        const csv = fs.readFileSync('./csv/allowed_addresses.csv', 'utf8');
+
+        // Split the CSV into lines
+        const lines = csv.split('\n');
+
+        return lines;
+    }
+    catch(ex) {
+        console.log(ex);
+        return [];
+    }
+}
+
 describe("VesingWallet", function () {
     it(`It should be deployable`, async function () {
         const [owner] = await ethers.getSigners();
@@ -416,7 +460,7 @@ describe("VesingWallet", function () {
             await vestingWallet.addVestingScheduleEvent(
                 vestingScheduleEvent.month,
                 vestingScheduleEvent.destinationAddress,
-                BigNumber.from(vestingScheduleEvent.amount)
+                ethers.utils.parseUnits(vestingScheduleEvent.amount)
             );
         }
         catch(ex) {
@@ -429,6 +473,66 @@ describe("VesingWallet", function () {
         
     });
 
- 
+    it('Admin should be able to set the vesting schedule from the CSV, and all corresponding lines should exist as an event', async function () {
+        const [owner] = await ethers.getSigners();
 
-});
+        // Get the address of the minter
+        const minterAddress = owner.address;
+
+        // Get the address of the VestingWallet
+        const VestingWalletContractFactory = await ethers.getContractFactory("VestingWallet");
+
+        // Deploy the VestingWallet
+        const vestingWallet = await VestingWalletContractFactory.deploy();
+
+        // Get the VestingWallet address
+        const vestingWalletAddress = vestingWallet.address;
+
+        // Check the allowedWallets state of the VestingWallet
+        expect(await vestingWallet.getAllowedWallets()).to.eql([]);
+
+        // Load the allowed_addresses csv file
+        const allowedAddresses = await loadAllowedAddressesFromFile();
+
+        // Add each allowedWallet
+        allowedAddresses.forEach(async (address) => {
+            await vestingWallet.addAllowedWallet(address);
+        });
+
+        // Check the allowedWallets state of the VestingWallet
+        expect(await vestingWallet.getAllowedWallets()).to.eql(allowedAddresses);
+
+        // Load the vesting_schedule csv file
+        const vestingSchedule = await loadVestingScheduleFromFile();
+
+        // Add each vesting schedule event
+        vestingSchedule.forEach(async (event) => {
+            try {
+                await vestingWallet.addVestingScheduleEvent(
+                    event.month,
+                    event.destinationAddress,
+                    ethers.utils.parseUnits(event.amount, 18)
+                );
+            } catch(ex) {
+                console.log(ex);
+            }
+
+        });
+
+        // Check the length
+        expect(await vestingWallet.getVestingScheduleEvents()).to.have.lengthOf(vestingSchedule.length);
+
+        const results = await vestingWallet.getVestingScheduleEvents();
+    
+        // Check the contents of the CSV line by line, to make sure a corresponding event exists
+        results.forEach(async (event) => {
+
+            const foundEvent = vestingSchedule.find((e) => {
+                return e.month === event.month && e.destinationAddress === event.destinationAddress && e.amount.toString() === event.amount;
+            });
+
+            expect(foundEvent).to.not.be.undefined;
+
+        });
+    });
+})
