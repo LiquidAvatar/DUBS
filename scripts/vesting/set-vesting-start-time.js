@@ -1,21 +1,5 @@
 const fs = require('fs');
 
-async function loadAllowedAddressesFromFile(file) {
-    // Load the CSV
-    try {
-        const csv = fs.readFileSync(file, 'utf8');
-
-        // Split the CSV into lines
-        const lines = csv.split('\n');
-
-        return lines;
-    }
-    catch(ex) {
-        console.log(ex);
-        return [];
-    }
-}
-
 
 async function main() {
 
@@ -42,17 +26,8 @@ async function main() {
         const vestingWallet = VestingWalletContract.attach(vestingWalletAddress);
 
         // Set the ERC20 on the vesting wallet
-        //const setTokenResult = await vestingWallet.setToken(dubs.address);
-        //console.log(setTokenResult);
-
-        // Load a list of allowed addresses from a CSV file
-        const allowedAddresses = await loadAllowedAddressesFromFile('./csv/allowed_addresses.csv');
-
-
-        //for(let i = 2; i <= 37; i++) {
-            const runEventResult = await vestingWallet.withdraw(38);
-            console.log(runEventResult);
-        //}
+        const setTokenResult = await vestingWallet.setStartPeriod(0);
+        console.log(setTokenResult);
 
     }
     catch(ex) {
@@ -66,4 +41,4 @@ main()
   .catch(error => {
 	console.error(error);
 	process.exit(1);
-});
+  });

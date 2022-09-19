@@ -526,13 +526,11 @@ describe("VesingWallet", function () {
     
         // Check the contents of the CSV line by line, to make sure a corresponding event exists
         results.forEach(async (event) => {
-
             const foundEvent = vestingSchedule.find((e) => {
                 return e.month === event.month && e.destinationAddress === event.destinationAddress && e.amount.toString() === event.amount;
             });
-
             expect(foundEvent).to.not.be.undefined;
-
         });
+        
     });
 })

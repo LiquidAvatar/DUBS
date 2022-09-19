@@ -12,7 +12,7 @@ contract VestingWallet is Ownable {
     struct VestingScheduleEvent {
         uint month;
         address destinationAddress;
-        uint amount;
+        uint256 amount;
         bool hasRun;
     }
 
@@ -35,7 +35,7 @@ contract VestingWallet is Ownable {
         }
     }
 
-    function addVestingScheduleEvent(uint _month, address _destinationAddress, uint _amount) public onlyOwner {
+    function addVestingScheduleEvent(uint _month, address _destinationAddress, uint256 _amount) public onlyOwner {
         // Do not allow modification of the vesting schedule once it has been locked
         require(
             isVestingScheduleLocked() == false,

@@ -73,8 +73,8 @@ async function main() {
         const vestingWallet = VestingWalletContract.attach(vestingWalletAddress);
 
         // Set the ERC20 on the vesting wallet
-        //const setTokenResult = await vestingWallet.setToken(dubs.address);
-        //console.log(setTokenResult);
+        const setTokenResult = await vestingWallet.setToken(dubs.address);
+        console.log(setTokenResult);
 
         // Load a list of allowed addresses from a CSV file
         const allowedAddresses = await loadAllowedAddressesFromFile('./csv/allowed_addresses.csv');
@@ -86,14 +86,17 @@ async function main() {
             const addAddressResult = await vestingWallet.addAllowedWallet(address);
         }
         
-
         // Add the vesting events to the vesting wallet
-        for (let i = 0; i < result.length; i++) {
-            const event = result[i];
-            const addVestingEventResult = await vestingWallet.addVestingEvent(event.month, event.destinationAddress, event.amount);
+        for (let i = 0; i < vestingEvents.length; i++) {
+            const event = vestingEvents[i];
+            try {
+                const addVestingEventResult = await vestingWallet.addVestingScheduleEvent(event.month, event.destinationAddress, ethers.utils.parseUnits(event.amount, 18));
+                console.log(`Adding vesting event: ${JSON.stringify(addVestingEventResult)}`);
+            }
+            catch(ex) {
+                console.log(ex);
+            }
         }
-
-        //console.log(result);
     }
     catch(ex) {
         console.log(ex);

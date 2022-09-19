@@ -25,6 +25,11 @@ async function generateVestingEventsFromCSV() {
 
 }
 
+async function wait(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
 
 async function main() {
 
@@ -41,7 +46,7 @@ async function main() {
         const VestingWallet = await ethers.getContractFactory("VestingWallet");
         const contract = await VestingWallet.deploy();
         console.log("Contract deployed at:", contract.address);
-
+        await wait(4000);
         // Set up the vesting periods
         
     } catch(ex) {
