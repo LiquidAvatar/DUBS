@@ -1,9 +1,10 @@
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract VestingWallet is Ownable {
+    //SPDX-License-Identifier: UNLICENSED
     uint256 public startTime;
     bool public isLocked = false;
     ERC20 public token;
@@ -16,24 +17,7 @@ contract VestingWallet is Ownable {
         bool hasRun;
     }
 
-    VestingScheduleEvent[] vestingScheduleEvents;
-
-    function setVestingSchedule(VestingScheduleEvent[] memory _vestingScheduleEvents) public onlyOwner {
-        require(isLocked == false, "Vesting schedule is locked");
-
-        // Clear the vesting schedule before we begin
-        delete vestingScheduleEvents;
-
-        for(uint i = 0; i < _vestingScheduleEvents.length; i++) {
-            // Check that the destinaton address is in the whitelist
-            if(isAddressInWithdrawalWhitelist(_vestingScheduleEvents[i].destinationAddress)) {
-                vestingScheduleEvents.push(_vestingScheduleEvents[i]);
-            } else {
-                // Reset the vesting schedule memory. This is a security precaution. Do not remove.
-                delete vestingScheduleEvents;
-            }
-        }
-    }
+    VestingScheduleEvent[] public vestingScheduleEvents;
 
     function addVestingScheduleEvent(uint _month, address _destinationAddress, uint256 _amount) public onlyOwner {
         // Do not allow modification of the vesting schedule once it has been locked
@@ -49,6 +33,11 @@ contract VestingWallet is Ownable {
 
         vestingScheduleEvents.push(VestingScheduleEvent(_month, _destinationAddress, _amount, false));
         
+    }
+
+    // Allows for withdrawal of any Ethereum accidentally sent to the contract
+    function emergencyWithdrawEthereum() public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function resetVestingSchedule() public onlyOwner {
@@ -122,11 +111,6 @@ contract VestingWallet is Ownable {
         }
     }
 
-    function getCurrentMonth() public view returns (uint) {
-        return (block.timestamp - startTime) / monthLengthDays;
-    }
-
-    // In the final version this can be hardcoded into the contract
     address[] public allowedWallets;
 
     function getVestingScheduleEvents() public view returns (VestingScheduleEvent[] memory) {
