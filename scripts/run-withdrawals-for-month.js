@@ -50,7 +50,7 @@ async function main() {
 
 
         //for(let i = 2; i <= 37; i++) {
-            const runEventResult = await vestingWallet.withdraw(38);
+            const runEventResult = await vestingWallet.withdraw(0);
             console.log(runEventResult);
         //}
 

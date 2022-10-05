@@ -63,7 +63,10 @@ async function main() {
         // Attach to the VestingWallet
         const vestingWallet = VestingWalletContract.attach(vestingWalletAddress);
 
+        const reset = await vestingWallet.resetVestingSchedule();
+        console.log(reset);
 
+        
         // Add the vesting events to the vesting wallet
         for (let i = 0; i < vestingEvents.length; i++) {
             const event = vestingEvents[i];
@@ -81,6 +84,7 @@ async function main() {
             console.log(addVestingEventResult);
 
         }
+        
 
     }
     catch(ex) {

@@ -22,7 +22,8 @@ import "@nomiclabs/hardhat-etherscan";
   },
   etherscan: {
     apiKey: {
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+      polygon: process.env.POLYGONSCAN_API_KEY
     },
   },
   networks: {
@@ -35,7 +36,6 @@ import "@nomiclabs/hardhat-etherscan";
         },
       ],
     },
-    
 
     mumbai: {
       url: process.env.MUMBAI_RPC_URL || "",
@@ -47,6 +47,18 @@ import "@nomiclabs/hardhat-etherscan";
         passphrase: "",
       },
       chainId: 80001,
+    },
+
+    polygon: {
+      url: process.env.LIVE_POLYGON_RPC || "",
+      accounts: {
+        mnemonic: process.env.TESTNET_MNENONIC,
+        path: "m/44'/60'/0'/0",
+        initialIndex: 0,
+        count: 20,
+        passphrase: "",
+      },
+      chainId: 137,
     }
   },
   solidity: {

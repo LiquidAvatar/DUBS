@@ -121,6 +121,23 @@ contract VestingWallet is Ownable {
         return allowedWallets;
     }
 
+    
+    // This prevents the ownership of the contract from being transferred should any private keys be compromised
+    function transferOwnership(address newOwner) public override onlyOwner {
+        require(
+            false,
+            "The ownership of this contract cannot be transferred"
+        );
+    }
+
+        // This prevents the ownership of the contract from being transferred should any private keys be compromised
+    function renounceOwnership() public override onlyOwner {
+        require(
+            false,
+            "The ownership of this contract cannot be renounced"
+        );
+    }
+    
     constructor()
     {
         startTime = block.timestamp;

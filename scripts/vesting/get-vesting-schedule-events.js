@@ -63,20 +63,7 @@ async function main() {
 
         const vestingEvents = await vestingWallet.getVestingScheduleEvents();
 
-        const expectedEvents = await generateVestingEventsFromCSV('./csv/vesting.csv');
-
-        let index = 0;
-
-        vestingEvents.forEach((event) => {
-            const result = {
-                month: event.month,
-                destinationAddress: event.destinationAddress,
-                amount: utils.formatUnits(event.amount.toString(), 18),
-            }
-            const origResult = expectedEvents[index];
-
-            index++;
-        })
+        console.log(vestingEvents.length);
 
     }
     catch(ex) {
@@ -90,4 +77,4 @@ main()
   .catch(error => {
 	console.error(error);
 	process.exit(1);
-  });
+});
