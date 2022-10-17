@@ -1,14 +1,23 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract VestingWallet is Ownable {
+contract VestingWallet {
     //SPDX-License-Identifier: UNLICENSED
     uint256 public startTime;
     bool public isLocked = false;
     ERC20 public token;
     uint256 public monthLengthDays = 28 days;
+
+    // Set up a mutator to only allow access to the owner
+    address owner;
+
+    // Set up a mutator to only allow access to the owner of the contract
+    modifier onlyOwner {
+        require(msg.sender == owner, "You are not the owner");
+        _;
+    }
 
     struct VestingScheduleEvent {
         uint month;
@@ -121,27 +130,20 @@ contract VestingWallet is Ownable {
         return allowedWallets;
     }
 
-    
-    // This prevents the ownership of the contract from being transferred should any private keys be compromised
-    function transferOwnership(address newOwner) public override onlyOwner {
+    function setOwner(address _owner) public onlyOwner {
         require(
-            false,
-            "The ownership of this contract cannot be transferred"
+            isVestingScheduleLocked() == true,
+            "Schedule is not locked yet!"
         );
+        owner = _owner;
     }
 
-        // This prevents the ownership of the contract from being transferred should any private keys be compromised
-    function renounceOwnership() public override onlyOwner {
-        require(
-            false,
-            "The ownership of this contract cannot be renounced"
-        );
-    }
     
     constructor()
     {
         startTime = block.timestamp;
         isLocked = false;
+        owner = msg.sender;
     }
 
 }
