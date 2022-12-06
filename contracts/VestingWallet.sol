@@ -101,7 +101,7 @@ contract VestingWallet {
         allowedWallets.push(_address);
     }
 
-    function withdraw(uint month) onlyOwner public {
+    function withdraw(uint month) public {
         require(
             isVestingScheduleLocked() == true,
             "Schedule is not locked yet!"
@@ -129,15 +129,6 @@ contract VestingWallet {
     function getAllowedWallets() public view returns (address[] memory) {
         return allowedWallets;
     }
-
-    function setOwner(address _owner) public onlyOwner {
-        require(
-            isVestingScheduleLocked() == true,
-            "Schedule is not locked yet!"
-        );
-        owner = _owner;
-    }
-
     
     constructor()
     {
